@@ -21,7 +21,10 @@ class ResultViewController: UIViewController {
     
     override func viewDidLoad() {
         splittedSumLabel.text = String(format: "%.2f", Double(truncating: model!.splittedSum as NSNumber));
-        descriptionLabel.text = String(format: "Split between %d people, with %.2f%% tip.", model!.personsCount, Double(truncating: model!.tipPercent as NSNumber) * 100.0);
+        descriptionLabel.text = String(format: "Split between %d people", model!.personsCount);
+        if (model!.tipPercent > 0) {
+            descriptionLabel.text! += String(format: ", with %.2f%% tip.", Double(truncating: model!.tipPercent as NSNumber) * 100.0);
+        }
     }
     
 }

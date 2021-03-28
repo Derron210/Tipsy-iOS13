@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet var tipButtons: [UIButton]!
     @IBOutlet weak var personCountLabel: UILabel!
@@ -22,9 +22,23 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad();
+        billSumText.delegate = self;
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         view.addGestureRecognizer(tap);
         self.updateView();
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if textField == billSumText {
+            let countdots =  (textField.text?.components(separatedBy: (",")).count)! - 1;
+            if (countdots > 0 && string == ",") {
+                return false;
+            }
+            let allowedCharacters = CharacterSet(charactersIn:"0123456789,")//Here change this characters based on your requirement
+            let characterSet = CharacterSet(charactersIn: string)
+            return allowedCharacters.isSuperset(of: characterSet)
+        }
+        return true
     }
     
     @objc func dismissKeyboard() {
@@ -40,7 +54,7 @@ class ViewController: UIViewController {
     }
         
     func updateView() {
-        billSumText.text = model.billSum.description;
+        billSumText.text = model.billSum != 0 ? model.billSum.description : "";
         personCountLabel.text = String(model.personsCount)
         personCountStepper.value = Double(model.personsCount)
     }
@@ -64,7 +78,10 @@ class ViewController: UIViewController {
         updateView();
     }
     @IBAction func billSumTextChanged(_ sender: UITextField!) {
-        model.billSum = Decimal(string: sender.text!)!;
+        model.billSum = Decimal(string: sender.text ?? "0") ?? 0;
+        if (model.billSum == 0) {
+            billSumText.text = "";
+        }
     }
 }
 
